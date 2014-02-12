@@ -1,4 +1,4 @@
 MordinSolus
 ===========
 
-Collection of useful Obj-C and iOD Function. 
+Collection of useful Obj-C and iOS Function.
