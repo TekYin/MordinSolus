@@ -34,11 +34,11 @@ typedef enum {
 @property(nonatomic, assign) CGBorder padding;
 @property(nonatomic) bool isSorted;
 
-- (TYLayoutHelper *)initWithParent:(UIView *)aContainer padding:(CGBorder)aPadding orientation:(TYLayoutOrientation)anOrientation;
+- (TYLayoutHelper *)initWithContainer:(UIView *)aContainer padding:(CGBorder)aPadding orientation:(TYLayoutOrientation)anOrientation;
 
-- (TYLayoutHelper *)initWithParent:(UIView *)aContainer orientation:(TYLayoutOrientation)anOrientation;
+- (TYLayoutHelper *)initWithContainer:(UIView *)aContainer orientation:(TYLayoutOrientation)anOrientation;
 
-- (TYLayoutHelper *)initWithParent:(UIView *)aContainer;
+- (TYLayoutHelper *)initWithContainer:(UIView *)aContainer;
 
 - (TYLayoutHelper *)addMemberWithView:(UIView *)aView align:(TYLayoutAlign)anAlign margin:(CGBorder)aMargin;
 

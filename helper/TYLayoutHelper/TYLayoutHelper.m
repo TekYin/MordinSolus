@@ -19,7 +19,7 @@
 
 @synthesize isSorted;
 
-- (TYLayoutHelper *)initWithParent:(UIView *)aContainer padding:(CGBorder)aPadding orientation:(TYLayoutOrientation)anOrientation {
+- (TYLayoutHelper *)initWithContainer:(UIView *)aContainer padding:(CGBorder)aPadding orientation:(TYLayoutOrientation)anOrientation {
     self = [super init];
     if (self) {
         isSorted = NO;
@@ -31,12 +31,12 @@
     return self;
 }
 
-- (TYLayoutHelper *)initWithParent:(UIView *)aContainer orientation:(TYLayoutOrientation)anOrientation {
-    return [self initWithParent:aContainer padding:CGBorderMake(0, 0, 0, 0) orientation:anOrientation];
+- (TYLayoutHelper *)initWithContainer:(UIView *)aContainer orientation:(TYLayoutOrientation)anOrientation {
+    return [self initWithContainer:aContainer padding:CGBorderMake(0, 0, 0, 0) orientation:anOrientation];
 }
 
-- (TYLayoutHelper *)initWithParent:(UIView *)aContainer {
-    return [self initWithParent:aContainer padding:CGBorderMake(0, 0, 0, 0) orientation:TYLayoutOrientationVertical];
+- (TYLayoutHelper *)initWithContainer:(UIView *)aContainer {
+    return [self initWithContainer:aContainer padding:CGBorderMake(0, 0, 0, 0) orientation:TYLayoutOrientationVertical];
 }
 
 - (TYLayoutHelper *)addMemberWithView:(UIView *)aView align:(TYLayoutAlign)anAlign margin:(CGBorder)aMargin {
@@ -45,9 +45,13 @@
     return self;
 }
 
+- (TYLayoutHelper *)addMemberWithView:(UIView *)aView margin:(CGBorder)aMargin {
+    [self addMemberWithView:aView align:TYLayoutAlignLeftOrTop margin:aMargin];
+    return self;
+}
+
 - (TYLayoutHelper *)addMemberWithView:(UIView *)aView {
-    TYLayoutItem *item = [[TYLayoutItem alloc] initWithView:aView margin:CGBorderMake(0, 0, 0, 0) align:TYLayoutAlignLeftOrTop];
-    [member addObject:item];
+    [self addMemberWithView:aView align:TYLayoutAlignLeftOrTop margin:CGBorderMake(0, 0, 0, 0)];
     return self;
 }
 
@@ -92,7 +96,10 @@
 
 
 - (TYLayoutHelper *)doReLayoutWithAnimation:(BOOL)useAnimation duration:(float)duration {
-    CGRect rect = [container bounds];
+    CGSize rectSize = container.frame.size;
+    NSLog(@"frame: %@", NSStringFromCGRect([container frame]));
+    NSLog(@"bound: %@", NSStringFromCGRect([container bounds]));
+
 
     for (int i = 0; i < [member count]; i++) {
         TYLayoutItem *item = [member objectAtIndex:i];
@@ -103,13 +110,13 @@
         if (orientation == TYLayoutOrientationVertical) {
             switch (item.align) {
                 case TYLayoutAlignLeftOrTop:
-                    newX = rect.origin.x + padding.left + item.margin.left;
+                    newX = padding.left + item.margin.left;
                     break;
                 case TYLayoutAlignCenter:
-                    newX = rect.origin.x + padding.left + (rect.size.width - padding.left - padding.right) / 2 - (item.getWidth + item.getHorizontalMargin) / 2;
+                    newX = padding.left + (rectSize.width - padding.left - padding.right) / 2 - (item.getWidth + item.getHorizontalMargin) / 2;
                     break;
                 case TYLayoutAlignRightOrTop:
-                    newX = rect.origin.x + rect.size.width - padding.right - item.getHorizontalMargin - item.getWidth;
+                    newX = rectSize.width - padding.right - item.getHorizontalMargin - item.getWidth;
                     break;
             }
             if (i == 0) {
@@ -117,19 +124,19 @@
             }
             else {
                 TYLayoutItem *last = [member objectAtIndex:i - 1];
-                CGRect rect = [[last view] frame];
-                newY = rect.origin.y + rect.size.height + last.margin.bottom + item.margin.top;
+                CGRect itemRect = [[last view] frame];
+                newY = itemRect.origin.y + itemRect.size.height + last.margin.bottom + item.margin.top;
             }
         } else {
             switch (item.align) {
                 case TYLayoutAlignLeftOrTop:
-                    newY = rect.origin.y + padding.top + item.margin.top;
+                    newY = padding.top + item.margin.top;
                     break;
                 case TYLayoutAlignCenter:
-                    newY = rect.origin.y + padding.top + (rect.size.height - padding.top - padding.bottom) / 2 - (item.getHeight + item.getVerticalMargin) / 2;
+                    newY = padding.top + (rectSize.height - padding.top - padding.bottom) / 2 - (item.getHeight + item.getVerticalMargin) / 2;
                     break;
                 case TYLayoutAlignRightOrTop:
-                    newY = rect.origin.y + rect.size.height - padding.bottom - item.getVerticalMargin - item.getHeight;
+                    newY = rectSize.height - padding.bottom - item.getVerticalMargin - item.getHeight;
                     break;
             }
             if (i == 0) {
@@ -137,8 +144,8 @@
             }
             else {
                 TYLayoutItem *last = [member objectAtIndex:i - 1];
-                CGRect rect = [[last view] frame];
-                newX = rect.origin.x + rect.size.width + last.margin.right + item.margin.left;
+                CGRect itemRect = [[last view] frame];
+                newX = itemRect.origin.x + itemRect.size.width + last.margin.right + item.margin.left;
             }
         }
         frame.origin.x = newX;
