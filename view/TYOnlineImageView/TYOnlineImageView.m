@@ -10,6 +10,7 @@
 #import "ASIHTTPRequest.h"
 #import "ASINetworkQueue.h"
 #import "UIImage+Resize.h"
+#import "UIImage+RoundedCorner.h"
 
 @implementation TYOnlineImageView {
     BOOL isTouchMoved;
@@ -165,7 +166,7 @@ static NSString *_placeholder;
                 self.frame = self.originalFrame;
             }
 
-            [self setImage:image];
+            [self setImage:[image roundedCornerImage:5 borderSize:0] ];
             [self notifyToDelegate];
         }
         else { // Image is not downloaded, assign download task
